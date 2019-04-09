@@ -61,7 +61,7 @@ NYTIMES_API_KEY= "ZcJg2JEv9hjNSOh5XsxEdy2uom3w0xz3"
 # Screen Shots
 
 Android Phone : 
-1. ![ScreenShot](https://www.dropbox.com/s/reggdr8eoeid0on/Phone1.png?dl=0)
+1. ![Alt text](https://www.dropbox.com/s/reggdr8eoeid0on/Phone1.png?dl=0 "Optional Title")
 2. ![ScreenShot](https://www.dropbox.com/s/uzfxh1gtf7pnhak/Phone2.png?dl=0)
 
 Android Tablet : 
