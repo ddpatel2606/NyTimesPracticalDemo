@@ -10,8 +10,6 @@ Import project in android studio like following steps:
 
 3. Select the project folder and click Ok.
 
-Please read this link. It might be helpful to you.
-
 
 Import project from github in android studio like following steps:
 
@@ -22,6 +20,8 @@ Import project from github in android studio like following steps:
 3. Select the repository and hit clone.
 
 The github repo will be created as a new project in android studio.
+
+Please read this link. It might be helpful to you.
 
 Reference Link : https://developer.android.com/studio/intro/migrate.html
 
@@ -35,8 +35,11 @@ NYTIMES_API_KEY= "ZcJg2JEv9hjNSOh5XsxEdy2uom3w0xz3"
 # Features
 
 • Android Version : 16(Android Jellybean) to 28(Android Pie)
+
 • Architecture Approach e.g. MVC, MVVM, etc.
+
 • Generic code and simple
+
 • Best coding practices
 
 # Dependencies
@@ -58,11 +61,11 @@ NYTIMES_API_KEY= "ZcJg2JEv9hjNSOh5XsxEdy2uom3w0xz3"
 # Screen Shots
 
 Android Phone : 
-1. https://www.dropbox.com/s/reggdr8eoeid0on/Phone1.png?dl=0
-2. https://www.dropbox.com/s/uzfxh1gtf7pnhak/Phone2.png?dl=0
+1. ![ScreenShot](https://www.dropbox.com/s/reggdr8eoeid0on/Phone1.png?dl=0)
+2. ![ScreenShot](https://www.dropbox.com/s/uzfxh1gtf7pnhak/Phone2.png?dl=0)
 
 Android Tablet : 
-1. https://www.dropbox.com/s/hg3j5w87rbnlvd1/tab.png?dl=0
+1. ![ScreenShot](https://www.dropbox.com/s/hg3j5w87rbnlvd1/tab.png?dl=0)
 
 
 
