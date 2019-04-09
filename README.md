@@ -61,11 +61,14 @@ NYTIMES_API_KEY= "ZcJg2JEv9hjNSOh5XsxEdy2uom3w0xz3"
 # Screen Shots
 
 Android Phone : 
-1. ![](screenshots/Phone1.png)
+1.
+![](screenshots/Phone1.png)
 
-2. ![](screenshots/Phone2.png)
+2. 
+![](screenshots/Phone2.png)
 
 Android Tablet : 
-1. ![](screenshots/tab.png)
+1. 
+![](screenshots/tab.png)
 
 
