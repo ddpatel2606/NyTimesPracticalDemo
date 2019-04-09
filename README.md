@@ -61,7 +61,9 @@ NYTIMES_API_KEY= "ZcJg2JEv9hjNSOh5XsxEdy2uom3w0xz3"
 # Screen Shots
 
 Android Phone : 
-1. ![Alt text](https://www.dropbox.com/s/reggdr8eoeid0on/Phone1.png?dl=0 "Optional Title")
+1. <div align="center">
+    <img src="https://www.dropbox.com/s/reggdr8eoeid0on/Phone1.png?dl=0"</img> 
+    </div>
 2. ![ScreenShot](https://www.dropbox.com/s/uzfxh1gtf7pnhak/Phone2.png?dl=0)
 
 Android Tablet : 
