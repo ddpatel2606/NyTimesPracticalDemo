@@ -5,11 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.nytimespracticaldemo.databinding.ItemDetailBinding;
 import com.nytimespracticaldemo.model.Result;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
 /**
@@ -56,9 +57,12 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.item_detail, container, false);
+        ItemDetailBinding binding = DataBindingUtil.inflate(inflater,R.layout.item_detail,
+                container,false);
+        // get the root view
+        View view = binding.getRoot();
 
-        ((WebView) rootView.findViewById(R.id.item_detail)).loadUrl(mItem.getUrl());
-        return rootView;
+        binding.itemDetail.loadUrl(mItem.getUrl());
+        return view;
     }
 }

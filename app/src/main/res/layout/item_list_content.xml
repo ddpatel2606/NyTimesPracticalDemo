@@ -1,78 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainView"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/white"
-    android:layout_margin="2dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/GotoImage"
-        android:layout_width="wrap_content"
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/mainView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp" />
+        android:padding="2dp"
+        android:background="@android:color/white">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/GotoImage"
-        android:layout_toLeftOf="@+id/GotoImage"
-        android:layout_toEndOf="@+id/ContentImage"
-        android:layout_toRightOf="@+id/ContentImage"
-        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/id_text"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:textAppearance="?attr/textAppearanceListItem" />
-
-        <TextView
-            android:id="@+id/contentTitle"
+        <ImageView
+            android:id="@+id/GotoImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:textAppearance="?attr/textAppearanceListItem" />
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/GotoImageView"
+            android:layout_toLeftOf="@+id/GotoImageView"
+            android:layout_toEndOf="@+id/ContentImageView"
+            android:layout_toRightOf="@+id/ContentImageView"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/by_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lines="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:textColor="@color/lightGrey" />
+                android:id="@+id/idTextView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:textAppearance="?attr/textAppearanceListItem" />
 
             <TextView
-                android:id="@+id/Date"
+                android:id="@+id/contentTitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="8dp"
-                android:textColor="@color/lightGrey" />
-        </LinearLayout>
-    </LinearLayout>
+                android:textAppearance="?attr/textAppearanceListItem" />
 
-    <ImageView
-        android:id="@+id/ContentImage"
-        android:layout_width="120dp"
-        android:layout_height="80dp"
-        android:scaleType="fitXY"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-         />
-</RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/byTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:lines="1"
+                    android:textColor="@color/lightGrey" />
+
+                <TextView
+                    android:id="@+id/dateTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/lightGrey" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ContentImageView"
+            android:layout_width="120dp"
+            android:layout_height="80dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitXY" />
+    </RelativeLayout>
+</layout>

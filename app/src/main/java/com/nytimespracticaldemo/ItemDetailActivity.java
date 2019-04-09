@@ -5,12 +5,12 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.nytimespracticaldemo.databinding.ActivityItemDetailBinding;
 import com.nytimespracticaldemo.model.Result;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -20,21 +20,22 @@ import androidx.appcompat.widget.Toolbar;
  */
 public class ItemDetailActivity extends AppCompatActivity {
 
+    ActivityItemDetailBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-        setSupportActionBar(toolbar);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_item_detail);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        setSupportActionBar(binding.detailToolbar);
+
+        binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT,
-                        "Hey check out my Article : "+((Result)getIntent().getParcelableExtra("data")).getUrl());
+                        "Hey check this Article : "+((Result)getIntent().getParcelableExtra("data")).getUrl());
                 sendIntent.setType("text/plain");
                 startActivity(sendIntent);
             }

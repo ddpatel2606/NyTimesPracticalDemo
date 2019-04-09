@@ -1,39 +1,33 @@
 package com.nytimespracticaldemo;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import com.nytimespracticaldemo.adapter.CustomArrayAdapter;
+import com.nytimespracticaldemo.adapter.SimpleItemRecyclerViewAdapter;
+import com.nytimespracticaldemo.databinding.ActivityItemListBinding;
 import com.nytimespracticaldemo.model.MostPopularModel;
 import com.nytimespracticaldemo.model.Result;
 import com.nytimespracticaldemo.restclient.API;
 import com.nytimespracticaldemo.restclient.ApiInterface;
 import com.nytimespracticaldemo.restclient.RestClient;
-import com.squareup.picasso.OkHttp3Downloader;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,19 +51,41 @@ public class ItemListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
     ProgressDialog progressDialog;
-    View recyclerView;
     String selectedDays="7";
     Boolean isTouch=false;
+    SimpleItemRecyclerViewAdapter adapter;
+    ActivityItemListBinding binding;
+    MostPopularModel mostPopularModel;
+    boolean doubleBackToExitPressedOnce = false;
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_item_list);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_item_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
-        toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        setSupportActionBar(binding.toolbar);
+        binding.toolbar.setTitle(getTitle());
+        binding.toolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+
+
+        binding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (adapter != null && adapter.selectedItemPosition != -1 && mostPopularModel != null) {
+
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT,
+                            "Hey check this Article : "+((Result)mostPopularModel.getResults().get(adapter.selectedItemPosition)).getUrl());
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                }
+
+
+            }
+        });
 
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
@@ -79,9 +95,12 @@ public class ItemListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-         recyclerView = findViewById(R.id.item_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        if(mTwoPane)
+            binding.fab.setVisibility(View.VISIBLE);
+        else
+            binding.fab.setVisibility(View.GONE);
+
+        setupRecyclerView();
     }
 
 
@@ -94,9 +113,9 @@ public class ItemListActivity extends AppCompatActivity {
         Spinner spinner = (Spinner) item.getActionView();
 
         final List<String> spinnerArray =  new ArrayList<String>();
-        spinnerArray.add("1 Days");
-        spinnerArray.add("7 Days");
-        spinnerArray.add("30 Days");
+        spinnerArray.add("1 Day");
+        spinnerArray.add("7 Day");
+        spinnerArray.add("30 Day");
 
         CustomArrayAdapter adapter = new CustomArrayAdapter(this,
                 R.layout.spinnerlayout, spinnerArray);
@@ -107,8 +126,8 @@ public class ItemListActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 
                 if(isTouch) {
-                    selectedDays = spinnerArray.get(pos).toString().replace("Days", "").trim();
-                    setupRecyclerView((RecyclerView) recyclerView);
+                    selectedDays = spinnerArray.get(pos).toString().replace("Day", "").trim();
+                    setupRecyclerView();
                 }
             }
 
@@ -135,47 +154,9 @@ public class ItemListActivity extends AppCompatActivity {
         return true;
     }
 
-    public class CustomArrayAdapter extends ArrayAdapter<String>{
 
-        private final LayoutInflater mInflater;
-        private final Context mContext;
-        private final List<String> items;
-        private final int mResource;
 
-        public CustomArrayAdapter(@NonNull Context context, @LayoutRes int resource,
-                                  @NonNull List objects) {
-            super(context, resource, 0, objects);
-
-            mContext = context;
-            mInflater = LayoutInflater.from(context);
-            mResource = resource;
-            items = objects;
-        }
-        @Override
-        public View getDropDownView(int position, @Nullable View convertView,
-                                    @NonNull ViewGroup parent) {
-            return createItemView(position, convertView, parent);
-        }
-
-        @Override
-        public @NonNull View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            return createItemView(position, convertView, parent);
-        }
-
-        private View createItemView(int position, View convertView, ViewGroup parent){
-            final View view = mInflater.inflate(mResource, parent, false);
-
-            TextView offTypeTv = (TextView) view.findViewById(R.id.offer_type_txt);
-
-            String offerData = items.get(position);
-
-            offTypeTv.setText(offerData);
-
-            return view;
-        }
-    }
-
-    private void setupRecyclerView(@NonNull final RecyclerView recyclerView) {
+    private void setupRecyclerView() {
 
         progressDialog = new ProgressDialog(ItemListActivity.this);
         progressDialog.setMessage("Loading....");
@@ -189,16 +170,25 @@ public class ItemListActivity extends AppCompatActivity {
             public void onResponse(Call<MostPopularModel> call, Response<MostPopularModel> response) {
                 Log.d(Consts.TAG, "Total number of questions fetched : " + response.body().getResults().size());
 
+                mostPopularModel = response.body();
                 progressDialog.dismiss();
 
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemListActivity.this,RecyclerView.VERTICAL,false);
-                recyclerView.setLayoutManager(linearLayoutManager);
+                binding.itemListView.itemList.setLayoutManager(linearLayoutManager);
 
-                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration( binding.itemListView.itemList.getContext(),
                         linearLayoutManager.getOrientation());
-                recyclerView.addItemDecoration(dividerItemDecoration);
-                recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(ItemListActivity.this,
-                        response.body(), mTwoPane));
+                binding.itemListView.itemList.addItemDecoration(dividerItemDecoration);
+
+                adapter = new SimpleItemRecyclerViewAdapter(ItemListActivity.this,
+                        mostPopularModel, mTwoPane);
+                binding.itemListView.itemList.setAdapter(adapter);
+
+                if(mTwoPane)
+                {
+                    //Call this method which will perform click for 0'th position after computing (binding) all data...
+                    postAndNotifyAdapter(new Handler(),  binding.itemListView.itemList);
+                }
             }
 
             @Override
@@ -211,93 +201,42 @@ public class ItemListActivity extends AppCompatActivity {
 
     }
 
-    public static class SimpleItemRecyclerViewAdapter
-            extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
-
-        private final ItemListActivity mParentActivity;
-        private final MostPopularModel mValues;
-        private final boolean mTwoPane;
-
-        SimpleItemRecyclerViewAdapter(ItemListActivity parent,
-                                      MostPopularModel items,
-                                      boolean twoPane) {
-            mValues = items;
-            mParentActivity = parent;
-            mTwoPane = twoPane;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_list_content, parent, false);
-            return new ViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(final ViewHolder holder, final int position) {
-            holder.mIdView.setText((position+1)+"");
-            holder.mContentTitle.setText(mValues.getResults().get(position).getTitle());
-            holder.mContentBy.setText(mValues.getResults().get(position).getByline());
-            holder.mContentDate.setText(mValues.getResults().get(position).getPublishedDate());
-
-            Picasso.Builder builder = new Picasso.Builder(mParentActivity);
-            builder.downloader(new OkHttp3Downloader(mParentActivity));
-            builder.build().load(mValues.getResults().get(position).getMedia().get(0).getMediaMetadata().get(2).getUrl())
-                    .placeholder((R.drawable.ic_launcher_background))
-                    .into(holder.mContentImage);
-
-
-            holder.itemView.setTag(mValues.getResults().get(position));
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    Result item = (Result) view.getTag();
-                    if (mTwoPane) {
-                        Bundle arguments = new Bundle();
-                        arguments.putParcelable("data", item);
-                        arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.getId()+"");
-                        ItemDetailFragment fragment = new ItemDetailFragment();
-                        fragment.setArguments(arguments);
-                        mParentActivity.getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.item_detail_container, fragment)
-                                .commit();
+    // Select Automatic First Item while on Tablet
+    protected void postAndNotifyAdapter(final Handler handler, final RecyclerView recyclerView) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (!recyclerView.isComputingLayout()) {
+                        // This will call first item by calling "performClick()" of view.
+                        ((SimpleItemRecyclerViewAdapter.MyViewHolder) recyclerView.findViewHolderForLayoutPosition(0)).itemView.performClick();
                     } else {
-                        Context context = view.getContext();
-                        Intent intent = new Intent(context, ItemDetailActivity.class);
-                        intent.putExtra("data", item);
-                        intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item.getId()+"");
-
-                        context.startActivity(intent);
+                        postAndNotifyAdapter(handler, recyclerView);
                     }
-
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mValues.getResults().size();
-        }
-
-        class ViewHolder extends RecyclerView.ViewHolder {
-            final TextView mIdView;
-            final ImageView mContentImage;
-            final TextView mContentTitle;
-            final TextView mContentBy;
-            final TextView mContentDate;
-            final RelativeLayout mainContent;
-
-
-            ViewHolder(View view) {
-                super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mainContent = (RelativeLayout) view.findViewById(R.id.mainView);
-                mContentImage = (ImageView) view.findViewById(R.id.ContentImage);
-                mContentTitle = (TextView) view.findViewById(R.id.contentTitle);
-                mContentDate = (TextView) view.findViewById(R.id.Date);
-                mContentBy = (TextView) view.findViewById(R.id.by_text);
             }
-        }
+        });
     }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+    }
+
+
 }
