@@ -31,9 +31,10 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.Observer;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * An activity representing a list of Items. This activity
@@ -57,6 +58,8 @@ public class ItemListActivity extends AppCompatActivity {
     ActivityItemListBinding binding;
     MostPopularModel mostPopularModel;
     boolean doubleBackToExitPressedOnce = false;
+
+    private Subscription subscription;
 
     @SuppressLint("RestrictedApi")
     @Override
@@ -164,42 +167,47 @@ public class ItemListActivity extends AppCompatActivity {
 
         ApiInterface apiService = RestClient.getClient().create(ApiInterface.class);
 
-        Call<MostPopularModel> call = apiService.getMostPopularNewsData(Integer.parseInt(selectedDays), API.NYTIMES_API_KEY);
-        call.enqueue(new Callback<MostPopularModel>() {
-            @Override
-            public void onResponse(Call<MostPopularModel> call, Response<MostPopularModel> response) {
-                Log.d(Consts.TAG, "Total number of questions fetched : " + response.body().getResults().size());
+        subscription = apiService.getMostPopularNewsData(Integer.parseInt(selectedDays), API.NYTIMES_API_KEY)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<MostPopularModel>() {
+                    @Override public void onCompleted() {
+                        Log.d(Consts.TAG, "In onCompleted()");
+                    }
 
-                mostPopularModel = response.body();
-                progressDialog.dismiss();
+                    @Override public void onError(Throwable e) {
+                        e.printStackTrace();
+                        progressDialog.dismiss();
+                        Log.e(Consts.TAG, "Got error : " + e.getLocalizedMessage());
+                    }
 
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemListActivity.this,RecyclerView.VERTICAL,false);
-                binding.itemListView.itemList.setLayoutManager(linearLayoutManager);
+                    @Override public void onNext(MostPopularModel gitHubRepos) {
+                        Log.d(Consts.TAG, "In onNext()");
 
-                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration( binding.itemListView.itemList.getContext(),
-                        linearLayoutManager.getOrientation());
-                binding.itemListView.itemList.addItemDecoration(dividerItemDecoration);
+                        mostPopularModel = gitHubRepos;
+                        progressDialog.dismiss();
 
-                adapter = new SimpleItemRecyclerViewAdapter(ItemListActivity.this,
-                        mostPopularModel, mTwoPane);
-                binding.itemListView.itemList.setAdapter(adapter);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ItemListActivity.this,RecyclerView.VERTICAL,false);
+                        binding.itemListView.itemList.setLayoutManager(linearLayoutManager);
 
-                if(mTwoPane)
-                {
-                    //Call this method which will perform click for 0'th position after computing (binding) all data...
-                    postAndNotifyAdapter(new Handler(),  binding.itemListView.itemList);
-                }
-            }
+                        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration( binding.itemListView.itemList.getContext(),
+                                linearLayoutManager.getOrientation());
+                        binding.itemListView.itemList.addItemDecoration(dividerItemDecoration);
 
-            @Override
-            public void onFailure(Call<MostPopularModel> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e(Consts.TAG, "Got error : " + t.getLocalizedMessage());
-            }
-        });
+                        adapter = new SimpleItemRecyclerViewAdapter(ItemListActivity.this,
+                                mostPopularModel, mTwoPane);
+                        binding.itemListView.itemList.setAdapter(adapter);
 
-
+                        if(mTwoPane)
+                        {
+                            //Call this method which will perform click for 0'th position after computing (binding) all data...
+                            postAndNotifyAdapter(new Handler(),  binding.itemListView.itemList);
+                        }
+                    }
+                });
     }
+
+
 
     // Select Automatic First Item while on Tablet
     protected void postAndNotifyAdapter(final Handler handler, final RecyclerView recyclerView) {
@@ -238,5 +246,13 @@ public class ItemListActivity extends AppCompatActivity {
         }, 2000);
     }
 
+
+    @Override
+    protected void onDestroy() {
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
+        }
+        super.onDestroy();
+    }
 
 }

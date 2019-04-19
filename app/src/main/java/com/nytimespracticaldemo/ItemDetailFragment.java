@@ -1,10 +1,15 @@
 package com.nytimespracticaldemo;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.nytimespracticaldemo.databinding.ItemDetailBinding;
@@ -27,7 +32,7 @@ public class ItemDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
 
     public  Result mItem;
-
+    ItemDetailBinding binding;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -57,12 +62,65 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ItemDetailBinding binding = DataBindingUtil.inflate(inflater,R.layout.item_detail,
+        binding = DataBindingUtil.inflate(inflater,R.layout.item_detail,
                 container,false);
         // get the root view
         View view = binding.getRoot();
 
+
+        binding.itemDetail.setWebViewClient(new WebViewClient()
+        {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+
+                Visible(binding.progressHorizontal);
+                super.onPageStarted(view, url, favicon);
+            }
+        });
+
+        binding.itemDetail.setWebChromeClient(new WebChromeClient(){
+
+            public void onProgressChanged(WebView view, int newProgress){
+                // Update the progress bar with page loading progress
+                binding.progressHorizontal.setProgress(newProgress);
+                if(newProgress == 100){
+                    // Hide the progressbar
+                    Gone(binding.progressHorizontal);
+                }
+            }
+        });
+
+        binding.itemDetail.getSettings().setJavaScriptEnabled(true);
+        binding.itemDetail.getSettings().setBuiltInZoomControls(true);
+        binding.itemDetail.getSettings().setDisplayZoomControls(false);
         binding.itemDetail.loadUrl(mItem.getUrl());
         return view;
     }
+
+
+    // slide the view from below itself to the current position
+    public void Visible(View view){
+        view.setVisibility(View.VISIBLE);
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,                 // toXDelta
+                view.getHeight(),  // fromYDelta
+                0);                // toYDelta
+        animate.setDuration(500);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
+    }
+
+    // slide the view from its current position to below itself
+    public void Gone(View view){
+        TranslateAnimation animate = new TranslateAnimation(
+                0,                 // fromXDelta
+                0,                 // toXDelta
+                0,                 // fromYDelta
+                view.getHeight()); // toYDelta
+        animate.setDuration(500);
+        animate.setFillAfter(true);
+        view.startAnimation(animate);
+    }
+
 }

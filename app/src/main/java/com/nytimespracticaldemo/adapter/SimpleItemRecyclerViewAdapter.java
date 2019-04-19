@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.nytimespracticaldemo.ItemDetailActivity;
 import com.nytimespracticaldemo.ItemDetailFragment;
 import com.nytimespracticaldemo.ItemListActivity;
@@ -62,6 +63,7 @@ public class SimpleItemRecyclerViewAdapter extends RecyclerView.Adapter<SimpleIt
         // loading album cover using Glide library
         Glide.with(mParentActivity).load(mValues.getResults().
                 get(position).getMedia().get(0).getMediaMetadata().get(2).getUrl())
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .into(holder.binding.ContentImageView);
 
         holder.itemView.setTag(mValues.getResults().get(position));
