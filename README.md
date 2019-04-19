@@ -58,9 +58,15 @@ NYTIMES_API_KEY= "ZcJg2JEv9hjNSOh5XsxEdy2uom3w0xz3"
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     
     
+# APK File
+
+![Download Apk](screenshots/DemoApp.apk)
+
+    
 # Screen Shots
 
 Android Phone : 
+
 1.
 ![](screenshots/Phone1.png)
 
@@ -68,6 +74,7 @@ Android Phone :
 ![](screenshots/Phone2.png)
 
 Android Tablet : 
+
 1. 
 ![](screenshots/tab.png)
 
